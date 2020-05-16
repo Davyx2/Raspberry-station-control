@@ -1,0 +1,13 @@
+1. logo
+change in /usr/share/plymounth/ (nb: png)
+
+2. background login
+wget https://raw.githubusercontent.com/PRATAP-KUMAR/focalgdm3/master/focalgdm3.sh
+sudo apt install libglib2.0-dev
+bash focalgdm3.sh --set
+
+3. automatic run qgroundcontrol
+cp launch.sh $HOME
+cp qgroundcontrol.desktop /usr/share/gnome/autostart/
+chmod +x qgroundcontrol.desktop
+reboot your device

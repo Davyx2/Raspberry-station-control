@@ -1,5 +1,7 @@
 [Desktop Entry]
 Type=Application
-Exec=/usr/bin/QGroundControl
-Name=QGroundControl
+Exec=/home/${USER}/launch.sh
+Name=QGroundContr
+Terminal=true
+X-GNOME-Autostart-enabled=true
 Comment=Execution de QGroundControl
