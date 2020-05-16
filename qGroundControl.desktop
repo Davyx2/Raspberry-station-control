@@ -1,0 +1,5 @@
+[Desktop Entry]
+Type=Application
+Exec=/usr/bin/QGroundControl
+Name=QGroundControl
+Comment=Execution de QGroundControl
