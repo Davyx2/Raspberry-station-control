@@ -26,8 +26,7 @@ sudo systemctl restart ufw.service &
 #---------------------------------------------------------------------------------------------------------------#
 
 sudo usermod -a -G sudo $USER
-#apt-get update -y
-#apt-get install -y net-tools
+
 INTERFACE=$(awk -F= ' NR == 7 {print $2}' credential.txt)
 file=$PWD/cfIp.yml
 if [ -f "$file" ]; then
