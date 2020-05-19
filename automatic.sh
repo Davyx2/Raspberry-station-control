@@ -19,7 +19,9 @@ sudo ufw allow 5001/tcp
 sudo ufw allow 5002/tcp
 sudo ufw allow 5003/tcp
 
+
 sudo ufw allow from $IP
+
 sudo systemctl restart ufw.service &
 #---------------------------------------------------------------------------------------------------------------#
 # Étape 1 - Fixer l'adresse IP de l'ordinateur sur 192.168.0.120 .... 
@@ -45,9 +47,8 @@ fi
 #-----------------------------------------------------------------------------------------------------------------#
 
 #before automtic
-cp launch.sh $HOME/
-cp qGroundControl.desktop /usr/share/gnome/autostart/
-#After
+cd $HOME/mon
+./launch.sh
 #you don't need to do this
 
 #-------------------------------------------------------------------------------------------------------------------#
@@ -59,16 +60,14 @@ PORT=$(awk -F= ' NR == 5 {print $2}' credential.txt)
 #run nc -l $PORT in raspery before next commant
 nc $IP $PORT
 
+#------------------------------------------------------------------------------------------------------------------------#
+# Étape 4 - Lancement de gstreamer en tant que client sur les ports 5000 et 5001
+#------------------------------------------------------------------------------------------------------------------------#
 
-
+gst-launch-1.0 -v udpsrc port=5000 caps ="application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H264, payload=(int)96" ! rtph264depay ! decodebin ! videoconvert ! autovideosink
 
 #-------------------------------------------------------------------------------------------------------------------#
-# Étape 3 - Connection au drone par UDP
-#-------------------------------------------------------------------------------------------------------------------#
-
-3. Lancement de gstreamer en tant que client sur les ports 5000 et 5001
-#-------------------------------------------------------------------------------------------------------------------#
-# Étape 4 - Connecter l'ordinateur au drone par SSH 
+# Étape 5 - Connecter l'ordinateur au drone par SSH 
 #-------------------------------------------------------------------------------------------------------------------#
 
 USERNAME=$(awk -F= 'NR == 1 {print $2}' credential.txt)
@@ -76,28 +75,23 @@ PASSWORD=$(awk -F= 'NR == 2 {print $2}' credential.txt)
 HOSTNAME=$(awk -F= 'NR == 3 {print $2}' credential.txt)
 
 #verify if enabledpassword=false
-sudo apt-get install sshpass
-SSH_COMMAND=$(ssh $USERNAME@$HOSTNAME -fTN -R 2222:192.168.0.120:22 -i $HOME/.ssh/id_rsa)
-
-if [[ -z $(ps -aux | grep "$SSH_COMMAND" | sed '$ d') ]]
-then exec $SSH_COMMAND
-else sshpass -p $PASSWORD ssh $USERNAME@$HOSTNAME
+pwd
+if [[ "$PWD" == "/home/martin/mon" ]]; then
+	SSH_COMMAND=$(sshpass -p $PASSWORD ssh $USERNAME@$HOSTNAME)
+	echo $SSH_COMMAND
+	exec $SSH_COMMAND
+else cd $HOME/mon	
 fi
 
-
-#------------------------------------------------------------------------------------------------------------------------#
-# Étape 5 - Lancement de gstreamer en tant que client sur les ports 5000 et 5001
-#------------------------------------------------------------------------------------------------------------------------#
-gst-launch-1.0 udpsrc port=5000 application/x-rtp,encoding-name=JPEG,payload=26
 
 
 #-------------------------------------------------------------------------------------------------------------------------#
 # Étape 6 - Execution du script 
 #-------------------------------------------------------------------------------------------------------------------------#
-
+gst-launch-1.0 -v ximagesrc ! video/x-raw,framerate=20/1 ! videoscale ! videoconvert ! x264enc tune=zerolatency bitrate=500 speed-preset=superfast ! rtph264pay ! udpsink host=$IP port=5000
 cd /home/pi/stream
 
-if [ $PWD == "/home/pi/stream" ] && [ -f "camera.sh" ] && [ -f "arduno.sh" ]
+if [[ "$PWD" == "/home/pi/stream" ]] && [ -f "camera.sh" ] && [ -f "arduno.sh" ]
 then
     chmod +x camera.sh
     ./camera.sh
@@ -107,10 +101,15 @@ else
     echo "Une erreur s'est produite lors de l'éxécution du script" >> /home/${USER}/error.txt
 fi
 
+exit
+
 
 #-------------------------------------------------------------------------------------------------------------------------#
 # Étape 7 - Récupération des données envoyés par le raspberry pi sur le port 6000
 #-------------------------------------------------------------------------------------------------------------------------#
+
+
+sudo ufw allow 6000/tcp
 
 
 
