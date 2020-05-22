@@ -1,12 +1,12 @@
 network:
     version: 2
-    renderer: networkd
+    renderer: networkdd
     ethernets:
-      enx00e04a6a40c3:
+      wlo1:
         dhcp4: no
         addresses:
-          - 192.168.0.120/24
-        gateway4: 192.168.0.1
+          - 192.168.50.111/24
+        gateway4: 192.168.50.1
         nameservers:
             addresses: [8.8.8.8, 1.1.1.1]
 # modifier l'interface 
