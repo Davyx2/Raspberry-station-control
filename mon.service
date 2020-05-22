@@ -3,6 +3,8 @@ Description=Monthabor startup Service
 After=network-manager.service
 StartLimitIntervalSec=0
 StartLimitAction=reboot
+
+[service]
 Type=simple
 Restart=always
 RestartSec=1

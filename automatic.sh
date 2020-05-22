@@ -88,6 +88,7 @@ fi
 #-------------------------------------------------------------------------------------------------------------------------#
 # Étape 6 - Execution du script 
 #-------------------------------------------------------------------------------------------------------------------------#
+sudo usermod -a 
 gst-launch-1.0 -v ximagesrc ! video/x-raw,framerate=20/1 ! videoscale ! videoconvert ! x264enc tune=zerolatency bitrate=500 speed-preset=superfast ! rtph264pay ! udpsink host=$IP port=5000
 cd /home/pi/stream
 
