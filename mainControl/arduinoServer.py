@@ -1,7 +1,7 @@
 import socket
 import sys
 
-IP_BOAT = '127.0.0.1'
+IP_BOAT = str(sys.argv[2])
 TCP_PORT = int(sys.argv[1]) # give 6000 here
 
 BUFFER_SIZE = 1024 

@@ -6,10 +6,11 @@ import socket
 
 NO_TCP_CONN = False
 
-ser = serial.Serial('/dev/ttyACM0',9600)
+ser = serial.Serial('/dev/ttyACM0',9600) or serial.Serial('/dev/ttyUSB0',9600)
+
 
 #parameter for TCP send
-TCP_IP = '192.168.0.121' #boatPi
+TCP_IP = str(sys.argv[2]) #boatPi
 TCP_PORT = int(sys.argv[1]) #give 6001
 BUFFER_SIZE = 1024
 

@@ -1,6 +1,5 @@
 #!/bin/bash
 
-set -xe
 
 
 IP=$(awk -F= ' NR == 4 {print $2}' credential.txt)
@@ -24,7 +23,7 @@ sudo ufw allow from $IP
 
 sudo systemctl restart ufw.service &
 
-echo "# Étape 0- Ouverture des ports  .... Fait\n" >> logFile
+echo "# Étape 0- Ouverture des ports  .... Fait\n" > logFile
 #---------------------------------------------------------------------------------------------------------------#
 # Étape 1 - Fixer l'adresse IP de l'ordinateur sur 192.168.0.120 .... 
 #---------------------------------------------------------------------------------------------------------------#
@@ -43,7 +42,7 @@ if [ -f "$file" ]; then
     sudo netplan apply
     ifconfig $INTERFACE | grep "inet"
 fi
-echo "Étape 1 - Fixer l'adresse IP de l'ordinateur sur 192.168.0.120 .... Fait \n" >> logFile
+#echo "Étape 1 - Fixer l'adresse IP de l'ordinateur sur 192.168.0.120 .... Fait \n" >> logFile
 #------------------------------------------------------------------------------------------------------------------#
 # Étape 2 - Lancement de QGroundControl
 #------------------------------------------------------------------------------------------------------------------#
@@ -52,7 +51,7 @@ echo "Étape 1 - Fixer l'adresse IP de l'ordinateur sur 192.168.0.120 .... Fait 
 cd $HOME/QGroundControl
 ./launch.sh &
 #you don't need to do this
-
+cat logFile
 echo "Étape 2 - Lancement de QGroundControl \n" >> logFile
 #-------------------------------------------------------------------------------------------------------------------#
 # Étape 3 - Connection au drone par UDP
@@ -64,22 +63,24 @@ PORT=$(awk -F= ' NR == 5 {print $2}' credential.txt)
 nc $IP $PORT
 
 echo "Étape 3 - Connection au drone par UDP  ....\n Fait" >> logFile
+cat logFile
 #-------------------------------------------------------------------------------------------------------------------#
 # Étape 4 - Lancement de gstreamer en tant que client sur les ports 5000 et 5001
 #-------------------------------------------------------------------------------------------------------------------#
 # Verify if connexion tcp is established 
 
 
-ping=$(ping $IP -c 2 | grep 64 | tail -n1)
-
-if [[ "$ping" == *"64"*]]; then
-    echo("icmp request accept")
-    cd /home/${USER}/QGroundControl/mainControl
+ping=$(ping 192.168.0.120 -c 2 | grep 64 | tail -n1)
+T='64'
+if [[ "$ping" == *"$T"* ]]; then
+    echo "icmp request accept"
+    cd /home/martin/QGroundControl/mainControl
+    ls | grep "main.sh"
     chmod +x main.sh
     ./main.sh &
 else
     ping $IP >> /home/${USER}/ping.txt
-    echo " Error: La rasperry pi est innacessible verifié la connexion internet" >> logFile
+    echo "La rasperry pi est innacessible verifié la connexion internet" >> logFile
     exit
 fi
 
@@ -90,7 +91,7 @@ echo "Étape 4 - Lancement de gstreamer en tant que client sur les ports 5000 et
 # Étape 5 - Connecter l'ordinateur au drone par SSH 
 #-------------------------------------------------------------------------------------------------------------------#
 
-
+cd ..
 USERNAME=$(awk -F= 'NR == 1 {print $2}' credential.txt)
 PASSWORD=$(awk -F= 'NR == 2 {print $2}' credential.txt)
 HOSTNAME=$(awk -F= 'NR == 3 {print $2}' credential.txt)
@@ -98,12 +99,12 @@ HOSTNAME=$(awk -F= 'NR == 3 {print $2}' credential.txt)
 #verify if enabledpassword=false
 pwd
 if [[ "$PWD" == "/home/martin/QGroundControl" ]]; then
-    if [[ "$PASSWORD" != " "]]; then
-	    SSH_COMMAND=$(sshpass -p $PASSWORD ssh $USERNAME@$HOSTNAME < remoteRasp.sh)
-	    echo $SSH_COMMAND
-	    exec $SSH_COMMAND 
+    if [ -z "$PASSWORD"]; then
+        ssh $USERNAME@$HOSTNAME < remoteRasp.sh 
     else
-        ssh $USERNAME@$HOSTNAME < remoteRasp.sh
+        SSH_COMMAND=$(sshpass -p $PASSWORD ssh $USERNAME@$HOSTNAME < remoteRasp.sh)
+	    echo $SSH_COMMAND
+	    exec $SSH_COMMAND
     fi
 else 
     echo "Error: Accedez à /QgroundCOntrol puis acceder via ssh au rasperry pi.. \n" >> logFile
@@ -120,4 +121,3 @@ echo "Welcome to Monthabor"
 
 
 cat logFile
-
