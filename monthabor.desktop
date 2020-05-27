@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Exec=/home/${USER}/QGroundControl/automatic.sh
+Name=Monthabor 
+Terminal=true
+X-GNOME-Autostart-enabled=true
+Comment=Execution du lancement automatique de QGroundControl

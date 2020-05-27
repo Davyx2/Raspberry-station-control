@@ -23,6 +23,8 @@ sudo ufw allow 5003/tcp
 sudo ufw allow from $IP
 
 sudo systemctl restart ufw.service &
+
+echo "# Étape 0- Ouverture des ports  .... Fait\n" >> logFile
 #---------------------------------------------------------------------------------------------------------------#
 # Étape 1 - Fixer l'adresse IP de l'ordinateur sur 192.168.0.120 .... 
 #---------------------------------------------------------------------------------------------------------------#
@@ -41,16 +43,17 @@ if [ -f "$file" ]; then
     sudo netplan apply
     ifconfig $INTERFACE | grep "inet"
 fi
-
-#-----------------------------------------------------------------------------------------------------------------#
+echo "Étape 1 - Fixer l'adresse IP de l'ordinateur sur 192.168.0.120 .... Fait \n" >> logFile
+#------------------------------------------------------------------------------------------------------------------#
 # Étape 2 - Lancement de QGroundControl
-#-----------------------------------------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------------------------------------------#
 
 #before automtic
 cd $HOME/QGroundControl
-./launch.sh
+./launch.sh &
 #you don't need to do this
 
+echo "Étape 2 - Lancement de QGroundControl \n" >> logFile
 #-------------------------------------------------------------------------------------------------------------------#
 # Étape 3 - Connection au drone par UDP
 #-------------------------------------------------------------------------------------------------------------------#
@@ -60,27 +63,29 @@ PORT=$(awk -F= ' NR == 5 {print $2}' credential.txt)
 #run nc -l $PORT in raspery before next commant
 nc $IP $PORT
 
-
-#------------------------------------------------------------------------------------------------------------------------#
+echo "Étape 3 - Connection au drone par UDP  ....\n Fait" >> logFile
+#-------------------------------------------------------------------------------------------------------------------#
 # Étape 4 - Lancement de gstreamer en tant que client sur les ports 5000 et 5001
-#------------------------------------------------------------------------------------------------------------------------#
+#-------------------------------------------------------------------------------------------------------------------#
 # Verify if connexion tcp is established 
+
 
 ping=$(ping $IP -c 2 | grep 64 | tail -n1)
 
 if [[ "$ping" == *"64"*]]; then
     echo("icmp request accept")
-    cd /home/martin/QGroundControl
+    cd /home/${USER}/QGroundControl/mainControl
     chmod +x main.sh
-    ./main.sh
+    ./main.sh &
 else
     ping $IP >> /home/${USER}/ping.txt
+    echo " Error: La rasperry pi est innacessible verifié la connexion internet" >> logFile
     exit
 fi
 
 
 
-
+echo "Étape 4 - Lancement de gstreamer en tant que client sur les ports 5000 et 5001 ... \n" >> logFile
 #-------------------------------------------------------------------------------------------------------------------#
 # Étape 5 - Connecter l'ordinateur au drone par SSH 
 #-------------------------------------------------------------------------------------------------------------------#
@@ -94,39 +99,25 @@ HOSTNAME=$(awk -F= 'NR == 3 {print $2}' credential.txt)
 pwd
 if [[ "$PWD" == "/home/martin/QGroundControl" ]]; then
     if [[ "$PASSWORD" != " "]]; then
-	    SSH_COMMAND=$(sshpass -p $PASSWORD ssh $USERNAME@$HOSTNAME)
+	    SSH_COMMAND=$(sshpass -p $PASSWORD ssh $USERNAME@$HOSTNAME < remoteRasp.sh)
 	    echo $SSH_COMMAND
-	    exec $SSH_COMMAND
+	    exec $SSH_COMMAND 
     else
-        ssh $USERNAME@$HOSTNAME
+        ssh $USERNAME@$HOSTNAME < remoteRasp.sh
     fi
-else cd $HOME/QGroundControl	
+else 
+    echo "Error: Accedez à /QgroundCOntrol puis acceder via ssh au rasperry pi.. \n" >> logFile
 fi
 
 
-
-#-------------------------------------------------------------------------------------------------------------------------#
-# Étape 6 - Execution du script 
-#-------------------------------------------------------------------------------------------------------------------------#
-
-
-if [[ "$PWD" == "/home/pi/stream" ]] && [ -f "camera.sh" ] && [ -f "arduno.sh" ] && [ -f "arduno.sh" ]
-then
-    chmod +x main.sh
-    ./main.sh
-else
-    echo "Une erreur s'est produite lors de l'éxécution du script" >> /home/${USER}/error.txt
-fi
-
-exit
+echo "Étape 5 - Connecter l'ordinateur au drone par SSH ... \n Fait" >> logFile
 
 
 #-------------------------------------------------------------------------------------------------------------------------#
 # Étape 7 - Récupération des données envoyés par le raspberry pi sur le port 6000
 #-------------------------------------------------------------------------------------------------------------------------#
+echo "Welcome to Monthabor"
 
 
-sudo ufw allow 6000/tcp
-
-
+cat logFile
 
