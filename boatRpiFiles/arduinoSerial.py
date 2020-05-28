@@ -12,6 +12,7 @@ import socket
 ser = serial.Serial('/dev/ttyUSB0',9600)
 #or:
 #ser = serial.Serial('/dev/ttyACM0',9600)
+#ser = serial.Seriam('/dev/ttyAMA0', )
 
 #parameter for TCP send
 IP_BOAT = '192.168.0.121'

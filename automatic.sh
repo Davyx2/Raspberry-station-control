@@ -49,7 +49,13 @@ fi
 
 #before automtic
 cd $HOME/QGroundControl
-./launch.sh &
+
+id=$(id -u $USER)
+if [ $id == 1000 ]
+then echo "Your gps would probably disabled" >> logFile
+else ./launch.sh &
+fi
+
 #you don't need to do this
 cat logFile
 echo "Étape 2 - Lancement de QGroundControl \n" >> logFile
@@ -70,7 +76,7 @@ cat logFile
 # Verify if connexion tcp is established 
 
 
-ping=$(ping 192.168.0.120 -c 2 | grep 64 | tail -n1)
+ping=$(ping 192.168.0.121 -c 2 | grep 64 | tail -n1)
 T='64'
 if [[ "$ping" == *"$T"* ]]; then
     echo "icmp request accept"
@@ -80,7 +86,7 @@ if [[ "$ping" == *"$T"* ]]; then
     ./main.sh &
 else
     ping $IP >> /home/${USER}/ping.txt
-    echo "La rasperry pi est innacessible verifié la connexion internet" >> logFile
+    echo "La rasperry pi est innacessible verifié la connexion internet \n" >> logFile
     exit
 fi
 
@@ -89,7 +95,7 @@ fi
 echo "Étape 4 - Lancement de gstreamer en tant que client sur les ports 5000 et 5001 ... \n" >> logFile
 #-------------------------------------------------------------------------------------------------------------------#
 # Étape 5 - Connecter l'ordinateur au drone par SSH 
-#-------------------------------------------------------------------------------------------------------------------#
+#------------<-------------------------------------------------------------------------------------------------------#
 
 cd ..
 USERNAME=$(awk -F= 'NR == 1 {print $2}' credential.txt)
