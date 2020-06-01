@@ -65,12 +65,14 @@ echo "Étape 2 - Lancement de QGroundControl \n" >> logFile
 
 
 PORT=$(awk -F= ' NR == 5 {print $2}' credential.txt)
-cd boatRpiFiles 
+cd boatRpiFiles
 sshpass -p $PASSWORD ssh $USERNAME@$HOSTNAME < udpServer.sh 
 cd ../mainControl
 nc $IP $PORT
 ./udpClient.sh &
 
+cd
+cd $HOME/QGroundControl
 #run nc -l $PORT in raspery before next commant
 
 
