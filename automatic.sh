@@ -65,14 +65,21 @@ echo "Étape 2 - Lancement de QGroundControl \n" >> logFile
 
 
 PORT=$(awk -F= ' NR == 5 {print $2}' credential.txt)
-#run nc -l $PORT in raspery before next commant
+cd boatRpiFiles 
+sshpass -p $PASSWORD ssh $USERNAME@$HOSTNAME < udpServer.sh 
+cd ../mainControl
 nc $IP $PORT
+./udpClient.sh &
+
+#run nc -l $PORT in raspery before next commant
+
 
 echo "Étape 3 - Connection au drone par UDP  ....\n Fait" >> logFile
 cat logFile
 #-------------------------------------------------------------------------------------------------------------------#
 # Étape 4 - Lancement de gstreamer en tant que client sur les ports 5000 et 5001
 #-------------------------------------------------------------------------------------------------------------------#
+
 # Verify if connexion tcp is established 
 
 
@@ -95,7 +102,7 @@ fi
 echo "Étape 4 - Lancement de gstreamer en tant que client sur les ports 5000 et 5001 ... \n" >> logFile
 #-------------------------------------------------------------------------------------------------------------------#
 # Étape 5 - Connecter l'ordinateur au drone par SSH 
-#------------<-------------------------------------------------------------------------------------------------------#
+#-------------------------------------------------------------------------------------------------------------------#
 
 cd ..
 USERNAME=$(awk -F= 'NR == 1 {print $2}' credential.txt)
@@ -105,7 +112,7 @@ HOSTNAME=$(awk -F= 'NR == 3 {print $2}' credential.txt)
 #verify if enabledpassword=false
 pwd
 if [[ "$PWD" == "/home/martin/QGroundControl" ]]; then
-    if [ -z "$PASSWORD"]; then
+    if [ -z "$PASSWORD" ]; then
         ssh $USERNAME@$HOSTNAME < remoteRasp.sh 
     else
         SSH_COMMAND=$(sshpass -p $PASSWORD ssh $USERNAME@$HOSTNAME < remoteRasp.sh)
