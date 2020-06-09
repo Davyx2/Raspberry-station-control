@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 #usage: ./
 
-
 import serial
 import time
 import sys
@@ -12,21 +11,19 @@ import socket
 ser = serial.Serial('/dev/ttyUSB0',9600)
 #or:
 #ser = serial.Serial('/dev/ttyACM0',9600)
-#ser = serial.Seriam('/dev/ttyAMA0', )
-
+#ser = serial.Serial('/dev/ttyAMA0',9600)
+#ser = serial.Serial('/dev/tty5',9600)
 #parameter for TCP send
-IP_BOAT = '192.168.0.121'
+IP_BOAT = '192.168.0.120'
 BUFFER_SIZE = 1024
 
-TCP_PORT = int(sys.argv[1]) # give 6000 here
+TCP_PORT = 6000 # give 6000 here
 print(IP_BOAT, TCP_PORT)
 
 try:
     sockArduino = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sockArduino.bind((IP_BOAT, TCP_PORT))
-    sockArduino.listen(1)
-    connArduino, addrArduino = sockArduino.accept()
-    print('Connection address of arduino tcp connection:', addrArduino)
+    sockArduino.connect((IP_BOAT, TCP_PORT))
+    print('Connection established to PC control:', (IP_BOAT))
 
     stored_exception = None
 
@@ -36,7 +33,7 @@ try:
                 break
             arduinoSensors = ser.readline()
             print(arduinoSensors)
-            connArduino.send((str(arduinoSensors)+';').encode())
+            sockArduino.send((str(arduinoSensors)).encode())
         except KeyboardInterrupt:
             stored_exception=sys.exc_info()
     
