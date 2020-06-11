@@ -105,6 +105,9 @@ echo "Étape 4 - Lancement de gstreamer en tant que client sur les ports 5000 et
 #-------------------------------------------------------------------------------------------------------------------#
 # Étape 5 - Connecter l'ordinateur au drone par SSH 
 #-------------------------------------------------------------------------------------------------------------------#
+cd
+cd $HOME/QGroundControl/mainControl
+python3 arduinoServer.py &
 
 cd ..
 USERNAME=$(awk -F= 'NR == 1 {print $2}' credential.txt)
