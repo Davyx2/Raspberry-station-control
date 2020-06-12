@@ -41,7 +41,7 @@ helpmenu.add_command(label='About')
 
 class Server():
     def __init__(self):
-        self.hostname = '192.168.0.120'
+        self.hostname = '192.168.50.44'
         self.port = 6000
         self.data = any
         self.alldata = ['0','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31']
