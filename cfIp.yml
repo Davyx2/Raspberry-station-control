@@ -1,6 +1,6 @@
 network:
     version: 2
-    renderer: networkdd
+    renderer: networkd
     ethernets:
       wlp58s0:
         dhcp4: no

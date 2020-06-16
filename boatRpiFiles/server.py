@@ -6,6 +6,7 @@ def Main():
     PORT = int(sys.argv[2])
     HOST = str(sys.argv[1])
 
+
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.bind((HOST, PORT))
 
