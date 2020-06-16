@@ -8,19 +8,16 @@ import sys
 from pymavlink import mavutil
 import socket
 
-<<<<<<< HEAD
 #ser = serial.Serial('/dev/ttyUSB0',9600)
 #or:
 #ser = serial.Serial('/dev/ttyACM0',9600)
 #ser = serial.Serial('/dev/ttyAMA0',9600)
 ser = serial.Serial('/dev/tty5',9600)
-=======
 ser = serial.Serial('/dev/USB0',9600)
 #or:
 #ser = serial.Serial('/dev/ttyACM0',9600)
 #ser = serial.Seriam('/dev/ttyAMA0', )
 
->>>>>>> 1a13aa1d92c74d0cdb9d2d16c04ba27568ec99bd
 #parameter for TCP send
 IP_BOAT = '192.168.50.107'
 BUFFER_SIZE = 1024

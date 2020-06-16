@@ -1,14 +1,6 @@
 #!/bin/bash
 
 
-<<<<<<< HEAD
-sudo ufw allow 6000/tcp
-sshpass -p "daviddavid" wanoon@192.168.50.107 bash -c "'
-cd /home/wanoon/Apps/QGroundControl/boatRpiFiles/
-python3 arduinoServer.py
-'"
-#'e
-=======
 
 IP=$(awk -F= ' NR == 4 {print $2}' credential.txt)
 #
@@ -73,11 +65,22 @@ echo "Étape 2 - Lancement de QGroundControl \n" >> logFile
 
 
 PORT=$(awk -F= ' NR == 5 {print $2}' credential.txt)
-cd boatRpiFiles
-sshpass -p $PASSWORD ssh $USERNAME@$HOSTNAME < udpServer.sh 
+cd boatRpiFiles  # entrer dans le dossier d'execution du serveur udp 
+sshpass -p $PASSWORD ssh $USERNAME@$HOSTNAME < udpServer.sh  # connection evec ssh puis ecoute du serveur udp 
 cd ../mainControl
-nc $IP $PORT
-./udpClient.sh &
+
+#Verifier si le port n'est pas utilisé
+#prends le pid et le kill s'il exist avant de lancer le client udp sur le port 5000
+IS_USED=$(sudo netstat -lnpt |grep 5000 | awk -F"      " ' NR == 1 {print $8}' | awk -F"/" '{print $1}') 
+if [[ -z "$IS_USED" ]]; then 
+    #nc $IP $PORT
+    ./udpClient.sh &
+else
+    kill -9 $IS_USED
+    ./udpClient.sh &
+fi
+
+
 
 cd
 cd $HOME/QGroundControl
@@ -102,7 +105,7 @@ if [[ "$ping" == *"$T"* ]]; then
     chmod +x main.sh
     ./main.sh &
 else
-    ping $IP >> /home/${USER}/ping.txt
+    #ping $IP >> /home/${USER}/ping.txt
     echo "La rasperry pi est innacessible verifié la connexion internet \n" >> logFile
     exit
 fi
@@ -128,6 +131,15 @@ if [[ "$PWD" == "/home/martin/QGroundControl" ]]; then
     if [ -z "$PASSWORD" ]; then
         ssh $USERNAME@$HOSTNAME < remoteRasp.sh 
     else
+#-------------------------------------------------------------------------------------------------------------------------#
+    # Étape 7 - Récupération des données envoyés par le raspberry pi sur le port 6000
+#-------------------------------------------------------------------------------------------------------------------------#
+        ### ACTIVATION DU SERVEUR ARDUINO
+        echo "activation du server arduino de recuperation de donnes"
+        cd mainControl
+        python3.6 arduinoServer.py &
+        echo "le logiciel de recuperation des donnes est up"
+        echo "connexion nssh puis lancement de script de recuperation des donnes de la rasperberry"
         SSH_COMMAND=$(sshpass -p $PASSWORD ssh $USERNAME@$HOSTNAME < remoteRasp.sh)
 	    echo $SSH_COMMAND
 	    exec $SSH_COMMAND
@@ -136,15 +148,5 @@ else
     echo "Error: Accedez à /QgroundCOntrol puis acceder via ssh au rasperry pi.. \n" >> logFile
 fi
 
-
-echo "Étape 5 - Connecter l'ordinateur au drone par SSH ... \n Fait" >> logFile
-
-
-#-------------------------------------------------------------------------------------------------------------------------#
-# Étape 7 - Récupération des données envoyés par le raspberry pi sur le port 6000
-#-------------------------------------------------------------------------------------------------------------------------#
-echo "Welcome to Monthabor"
-
-
+echo "Welcome to monthabor"
 cat logFile
->>>>>>> 1a13aa1d92c74d0cdb9d2d16c04ba27568ec99bd
