@@ -6,7 +6,7 @@ import socket
 
 NO_TCP_CONN = False
 
-ser = serial.Serial('/dev/ttyACM0',9600) or serial.Serial('/dev/ttyUSB0',9600)
+ser = serial.Serial('/dev/ttyUSB0',9600)
 
 
 #parameter for TCP send
