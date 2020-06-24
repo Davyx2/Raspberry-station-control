@@ -11,3 +11,4 @@ cp launch.sh $HOME
 cp qgroundcontrol.desktop /usr/share/gnome/autostart/
 chmod +x qgroundcontrol.desktop
 reboot your device
+
