@@ -3,7 +3,8 @@
 
 
 IP=$(awk -F= ' NR == 4 {print $2}' credential.txt)
-#
+
+
 #---------------------------------------------------------------------------------------------------------------#
 # Étape 0- Ouverture des ports
 #---------------------------------------------------------------------------------------------------------------#
@@ -20,8 +21,9 @@ sudo ufw allow 5003/tcp
 
 
 sudo ufw allow from $IP
+cat event_history.csv | grep "2020-07-03" |awk -F"," '{ print "Date: " $2" "$3" |  User: " $4 "|  Action: " $5 " |  ressource creé:" $6  $7 $8 $9 $10 "  | Erreur:" $11 "  |  Source IP:" $12 }' 
 
-sudo systemctl restart ufw.service &
+    sudo systemctl restart ufw.service &
 
 echo "# Étape 0- Ouverture des ports  .... Fait\n" > logFile
 #---------------------------------------------------------------------------------------------------------------#
@@ -80,8 +82,6 @@ else
     ./udpClient.sh &
 fi
 
-
-
 cd
 cd $HOME/QGroundControl
 #run nc -l $PORT in raspery before next commant
@@ -139,7 +139,7 @@ if [[ "$PWD" == "/home/martin/QGroundControl" ]]; then
         cd mainControl
         python3.6 arduinoServer.py &
         echo "le logiciel de recuperation des donnes est up"
-        echo "connexion nssh puis lancement de script de recuperation des donnes de la rasperberry"
+        echo "connexion ssh puis lancement de script de recuperation des donnes de la rasperberry"
         SSH_COMMAND=$(sshpass -p $PASSWORD ssh $USERNAME@$HOSTNAME < remoteRasp.sh)
 	    echo $SSH_COMMAND
 	    exec $SSH_COMMAND

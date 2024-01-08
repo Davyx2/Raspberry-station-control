@@ -10,13 +10,12 @@ import socket
 
 #ser = serial.Serial('/dev/ttyUSB0',9600)
 #or:
-#ser = serial.Serial('/dev/ttyACM0',9600)
+
 #ser = serial.Serial('/dev/ttyAMA0',9600)
 ser = serial.Serial('/dev/tty5',9600)
 ser = serial.Serial('/dev/USB0',9600)
 #or:
-#ser = serial.Serial('/dev/ttyACM0',9600)
-#ser = serial.Seriam('/dev/ttyAMA0', )
+
 
 #parameter for TCP send
 IP_BOAT = '192.168.50.107'
@@ -57,7 +56,7 @@ try:
 
         except KeyboardInterrupt:
             stored_exception=sys.exc_info()
-    
+    #
     if stored_exception:
         raise stored_exception
 finally:

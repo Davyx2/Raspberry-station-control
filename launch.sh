@@ -7,4 +7,4 @@ uid=$(id -u martin)
 if [ $uid == 0 ]
 then echo "you need to run this app with root user otherwise you can't get GPS"
 else ./QGroundControl.AppImage &
-fi
+fi  

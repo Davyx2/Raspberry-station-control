@@ -25,11 +25,8 @@ top.config(menu=menu)
 filemenu = Menu(menu)
 helpmenu = Menu(menu)
 
-        
-        
 menu.add_cascade(label='File', menu=filemenu) 
 menu.add_cascade(label='Help', menu=helpmenu)
-
 
 filemenu.add_command(label='New') 
 filemenu.add_command(label='Open...') 
@@ -42,7 +39,7 @@ helpmenu.add_command(label='About')
 #192.168.50.107
 class Server():
     def __init__(self):
-        self.hostname = '192.168.50.44'
+        self.hostname = '127.0.0.1'
         self.port = 6000
         self.data = any
         self.alldata = ['0','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17']
@@ -173,9 +170,6 @@ def Main():
     W.lauchCom()
     W.measuredistance()
     returnLoop()
-    
- 
-
 
 if __name__ == "__main__":
     Main()
